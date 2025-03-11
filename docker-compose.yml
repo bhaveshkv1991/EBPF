@@ -1,0 +1,31 @@
+version: '3.8'  # Using version 3.8 to avoid obsolete version warning
+
+services:
+  ebpf-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ebpf-security-monitor
+    container_name: ebpf-security-monitor
+    volumes:
+      - .:/app
+      - /sys/kernel/debug:/sys/kernel/debug:ro  # Access to kernel debugging
+      - /sys/fs/bpf:/sys/fs/bpf  # BPF filesystem
+      - /sys/kernel/tracing:/sys/kernel/tracing # Tracing directory (if available)
+      - /sys:/sys:ro  # Read-only access to sys
+      - /lib/modules:/lib/modules:ro  # Access to kernel modules
+      - /usr/src:/usr/src:ro  # Access to kernel headers
+    privileged: true  # Required for eBPF access
+    security_opt:
+      - seccomp:unconfined  # Needed for full syscall access
+      - apparmor:unconfined  # Disable AppArmor restrictions
+    cap_add:
+      - SYS_ADMIN  # Required for eBPF operations
+      - SYS_PTRACE  # Required for process tracing
+      - SYS_RESOURCE  # For setting resource limits
+      - NET_ADMIN  # For network-related BPF programs
+      - SYS_MODULE  # Allow loading kernel modules if needed
+    network_mode: "host"  # For network monitoring (if needed)
+    environment:
+      - DOCKER_BPF=1  # Custom environment variable to detect running in Docker
+    restart: unless-stopped  # Ensure container stays running
