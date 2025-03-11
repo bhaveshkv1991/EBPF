@@ -1,0 +1,67 @@
+.TH SECURITY_MONITOR 8 "2025" "Security Monitor" "System Administration"
+.SH NAME
+security_monitor \- Real-time security monitoring and response using eBPF
+.SH SYNOPSIS
+.B security_monitor
+[\fIOPTIONS\fR]
+.SH DESCRIPTION
+.B security_monitor
+is a kernel-level security monitoring tool that uses eBPF (extended Berkeley Packet Filter) to detect and respond to suspicious process behavior in real-time. It monitors system calls related to file access and command execution to detect potential security threats.
+.PP
+Without any options, security_monitor runs in monitoring mode, which logs suspicious activities without taking any enforcement actions.
+.SH OPTIONS
+.TP
+.BR \-e ", " \-\-enforce
+Enable enforcement mode. In this mode, security_monitor will not only detect suspicious activities but also take action (such as terminating processes) when critical security violations are detected.
+.TP
+.BR \-h ", " \-\-help
+Display help information and exit.
+.SH SECURITY FEATURES
+.PP
+security_monitor provides the following security monitoring capabilities:
+.TP
+.B Sensitive File Access Monitoring
+Detects when unauthorized processes attempt to access sensitive system files like /etc/shadow, /etc/passwd, etc.
+.TP
+.B Suspicious Command Execution
+Monitors execution of potentially risky commands and programs, especially when executed with suspicious arguments or by unauthorized users.
+.TP
+.B Privilege Escalation Detection
+Monitors attempts to escalate privileges through system calls like setuid, especially when a non-root user attempts to gain root privileges.
+.SH CONFIGURATION
+Configuration is stored in /etc/security_monitor.conf or can be specified with the --config option. See the example configuration file for details on available options.
+.SH EXIT STATUS
+.TP
+.B 0
+Successful program execution.
+.TP
+.B 1
+Error occurred.
+.SH FILES
+.TP
+.I /etc/security_monitor.conf
+The system-wide configuration file.
+.TP
+.I /var/log/security_monitor.log
+Default log file location.
+.SH EXAMPLES
+.PP
+Run in monitoring mode (alerts only):
+.PP
+.RS
+sudo security_monitor
+.RE
+.PP
+Run in enforcement mode (alerts + process termination):
+.PP
+.RS
+sudo security_monitor --enforce
+.RE
+.SH BUGS
+Report bugs to: https://github.com/security-monitor/issues
+.SH AUTHOR
+Security Monitoring Team
+.SH "SEE ALSO"
+.BR auditd (8),
+.BR apparmor (7),
+.BR selinux (8) 
